@@ -1,15 +1,29 @@
 import React from 'react';
-import { FaTrash, FaShoppingCart } from 'react-icons/fa';
+import { FaTrash, FaShoppingCart, FaPlus, FaMinus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const CartPage = ({ cartList, setCartList }) => {
   const calculateTotal = () => {
-    return cartList.reduce((total, item) => total + item.price, 0).toFixed(2);
+    return cartList.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0).toFixed(2);
   };
 
   function handleClick(index) {
     const newCartList = cartList.filter((obj) => obj.id !== cartList[index].id);
     setCartList(newCartList);
+  }
+
+  function increaseQuantity(index) {
+    const updatedCart = [...cartList];
+    updatedCart[index].quantity = (updatedCart[index].quantity || 1) + 1;
+    setCartList(updatedCart);
+  }
+
+  function decreaseQuantity(index) {
+    const updatedCart = [...cartList];
+    if ((updatedCart[index].quantity || 1) > 1) {
+      updatedCart[index].quantity = (updatedCart[index].quantity || 1) - 1;
+      setCartList(updatedCart);
+    }
   }
 
   return (
@@ -33,6 +47,22 @@ const CartPage = ({ cartList, setCartList }) => {
                 <div className="cart-item-details">
                   <h3>{value.title}</h3>
                   <p className="cart-item-price">₹{value.price}</p>
+                  <div className="quantity-controls">
+                    <button 
+                      className="quantity-btn"
+                      onClick={() => decreaseQuantity(index)}
+                      disabled={(value.quantity || 1) <= 1}
+                    >
+                      <FaMinus />
+                    </button>
+                    <span className="quantity">{value.quantity || 1}</span>
+                    <button 
+                      className="quantity-btn"
+                      onClick={() => increaseQuantity(index)}
+                    >
+                      <FaPlus />
+                    </button>
+                  </div>
                 </div>
                 <button 
                   className="remove-btn"
